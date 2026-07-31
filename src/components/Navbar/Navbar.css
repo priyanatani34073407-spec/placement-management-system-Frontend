@@ -1,9 +1,25 @@
-.navbar{
-    height: 70px;
-    background-color: aqua;
-    color: white;
-    padding: 12px;
-    display: flex;
-    justify-content: center;
+.navbar {
+  height: 64px;
+  background: linear-gradient(90deg, #1e3a8a, #2563eb);
+  color: white;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
+.navbar-brand {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 14px;
 }
