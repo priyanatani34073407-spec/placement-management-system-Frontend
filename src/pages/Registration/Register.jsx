@@ -1,9 +1,12 @@
 import { useState } from "react";
 import "./Registration.css";
 import { useNavigate } from "react-router-dom";
+import api from "../../api/api";
+import { useToast } from "../Toast/ToastContext";
 
 function Register() {
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [studentName, setStudentName] = useState("");
   const [password, setPassword] = useState("");
@@ -23,32 +26,32 @@ function Register() {
     e.preventDefault();
 
     if (studentName.trim() === "") {
-      alert("Name is required");
+      toast.error("Name is required");
       return;
     }
 
     if (!emailPattern.test(email)) {
-      alert("Enter a valid email");
+      toast.error("Enter a valid email");
       return;
     }
 
     if (phone.length !== 10 || isNaN(phone)) {
-      alert("Enter a valid 10-digit phone number");
+      toast.error("Enter a valid 10-digit phone number");
       return;
     }
 
     if (branch.trim() === "") {
-      alert("Branch is required");
+      toast.error("Branch is required");
       return;
     }
 
     if (cgpa === "" || Number(cgpa) < 0 || Number(cgpa) > 10) {
-      alert("CGPA must be between 0 and 10");
+      toast.error("CGPA must be between 0 and 10");
       return;
     }
 
     if (!passwordPattern.test(password)) {
-      alert(
+      toast.error(
         "Password must contain at least 8 characters with uppercase, lowercase, number and special character."
       );
       return;
@@ -57,28 +60,15 @@ function Register() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/students", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          studentName,
-          email,
-          phone,
-          branch,
-          cgpa,
-        }),
+      const response = await api.post("/students", {
+        studentName,
+        email,
+        phone,
+        branch,
+        cgpa,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        alert(data.message || "Registration Failed");
-        return;
-      }
-
-      alert("Student Registered Successfully!");
+      toast.success(response.data.message || "Student Registered Successfully!");
 
       setStudentName("");
       setPassword("");
@@ -89,9 +79,8 @@ function Register() {
 
       navigate("/students");
     } catch (error) {
-  console.error("Full Error:", error);
-  console.error("Message:", error.message);
-  alert(error.message);
+      console.error("Full Error:", error);
+      toast.error(error.response?.data?.message || "Registration Failed");
     } finally {
       setLoading(false);
     }
@@ -142,13 +131,18 @@ function Register() {
 
         <br />
 
-        <input
-          type="text"
-          placeholder="Enter Branch"
+        <select
           value={branch}
           onChange={(e) => setBranch(e.target.value)}
           disabled={loading}
-        />
+        >
+          <option value="">Select Branch</option>
+          <option value="CSE">CSE</option>
+          <option value="CSM">CSM</option>
+          <option value="CSE-AI">CSE-AI</option>
+          <option value="CIVIL">CIVIL</option>
+          <option value="DS">DS</option>
+        </select>
 
         <br />
 
@@ -158,6 +152,9 @@ function Register() {
           value={cgpa}
           onChange={(e) => setCGPA(e.target.value)}
           disabled={loading}
+          step="0.01"
+          min="0"
+          max="10"
         />
 
         <br />
