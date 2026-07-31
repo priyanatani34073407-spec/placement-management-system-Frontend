@@ -9,7 +9,6 @@ useEffect(()=>{
         clearInterval(timer);
     }
     },[]);
-
 return(
 <div>
     <h2>Current Time</h2>
