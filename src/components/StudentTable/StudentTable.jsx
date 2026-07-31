@@ -1,12 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import "./StudentTable.css";
+import api from "../../api/api";
+import { useToast } from "../Toast/ToastContext";
 
 function Student({ students = [], setStudents }) {
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
+  const toast = useToast();
 
-  // Delete Student using fetch()
+  // Delete Student
   const deleteStudent = async (id) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this student?"
@@ -15,60 +18,46 @@ function Student({ students = [], setStudents }) {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`http://localhost:8000/students/${id}`, {
-        method: "DELETE",
-      });
+      const response = await api.delete(`/students/${id}`);
 
-      const data = await response.json();
+      toast.success(response.data.message || "Student deleted.");
 
-      if (response.ok) {
-        alert(data.message);
-
-        setStudents((prevStudents) =>
-          prevStudents.filter((student) => student._id !== id)
-        );
-      } else {
-        alert(data.message);
-      }
+      setStudents((prevStudents) =>
+        prevStudents.filter((student) => student._id !== id)
+      );
     } catch (error) {
       console.error(error);
-      alert("Failed to delete student.");
+      toast.error(error.response?.data?.message || "Failed to delete student.");
     }
   };
 
-  // View Student using fetch()
+  // View Student
   const viewStudent = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8000/students/${id}`);
+      const response = await api.get(`/students/${id}`);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        navigate(`/student/${id}`, {
-          state: {
-            student: data.student,
-          },
-        });
-      } else {
-        alert(data.message);
-      }
+      navigate(`/student/${id}`, {
+        state: {
+          student: response.data.student,
+        },
+      });
     } catch (error) {
       console.error(error);
-      alert("Unable to fetch student details.");
+      toast.error(error.response?.data?.message || "Unable to fetch student details.");
     }
   };
 
-const filteredStudents = students.filter((student) => {
-  const query = search.toLowerCase();
+  const filteredStudents = students.filter((student) => {
+    const query = search.toLowerCase();
 
-  return (
-    student.studentName?.toLowerCase().includes(query) ||
-    student.email?.toLowerCase().includes(query) ||
-    student.phone?.toString().toLowerCase().includes(query) ||
-    student.branch?.toLowerCase().includes(query) ||
-    student.cgpa?.toString().includes(query)
-  );
-});
+    return (
+      student.studentName?.toLowerCase().includes(query) ||
+      student.email?.toLowerCase().includes(query) ||
+      student.phone?.toString().toLowerCase().includes(query) ||
+      student.branch?.toLowerCase().includes(query) ||
+      student.cgpa?.toString().includes(query)
+    );
+  });
 
   return (
     <>
