@@ -1,25 +1,26 @@
-import { NavLink , useNavigate} from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "./Sidebar.css";
-import Login from "../pages/Login/Login";
+import { logout } from "../../utils/auth";
 
 function Sidebar() {
   const navigate = useNavigate();
-  
-  function Logout() {
-    localStorage.removeItem("isLoggedIn")
-    navigate("/Login");
+
+  function handleLogout() {
+    logout();
+    navigate("/login");
   }
+
   return (
     <ul className="sidebar">
       <NavLink
-        to="/Dashboard"
+        to="/dashboard"
         className={({ isActive }) => (isActive ? "active" : "")}
       >
         <li>Dashboard</li>
       </NavLink>
 
       <NavLink
-        to="/Register"
+        to="/register"
         className={({ isActive }) => (isActive ? "active" : "")}
       >
         <li>Student Registration</li>
@@ -35,42 +36,48 @@ function Sidebar() {
       <NavLink
         to="/companies"
         className={({ isActive }) => (isActive ? "active" : "")}
-        >
-      <li>Companies</li>
+      >
+        <li>Companies</li>
       </NavLink>
-        
-        <NavLink
-          to="/company-registration"
-          className={({ isActive }) => (isActive ? "active" : "")}
-        >
-          <li>Company Registration</li>
-        </NavLink>
 
       <NavLink
-        to="/Placements"
+        to="/company-registration"
+        className={({ isActive }) => (isActive ? "active" : "")}
+      >
+        <li>Company Registration</li>
+      </NavLink>
+
+      <NavLink
+        to="/placements"
         className={({ isActive }) => (isActive ? "active" : "")}
       >
         <li>Placements</li>
       </NavLink>
 
       <NavLink
-        to="/Reports"
+        to="/placements/new"
+        className={({ isActive }) => (isActive ? "active" : "")}
+      >
+        <li>Record Placement</li>
+      </NavLink>
+
+      <NavLink
+        to="/reports"
         className={({ isActive }) => (isActive ? "active" : "")}
       >
         <li>Reports</li>
       </NavLink>
 
       <NavLink
-        to="/Settings"
+        to="/settings"
         className={({ isActive }) => (isActive ? "active" : "")}
       >
         <li>Settings</li>
       </NavLink>
 
-      <button onClick={Logout}>
+      <button onClick={handleLogout} className="sidebar-logout">
         <li>Logout</li>
-        </button>
-      
+      </button>
     </ul>
   );
 }
