@@ -1,108 +1,94 @@
 import { useEffect, useState } from "react";
 import "./Dashboard.css";
 import Clock from "../Clock/Clock";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import api from "../../api/api";
+import { getUser } from "../../utils/auth";
+import { AiOutlineTeam, AiOutlineBank, AiOutlineCheckCircle, AiOutlinePercentage } from "react-icons/ai";
 
 function Dashboard() {
-  const navigate = useNavigate();
+  const user = getUser();
 
-  const [count, setCount] = useState(250);
-  const [count1, setCount1] = useState(50);
-  const [count2, setCount2] = useState(40);
-  const [count3, setCount3] = useState(40);
-  const [students, setStudents] = useState([]);
-
-  // Check login status
-  function loginStatus() {
-    const status = localStorage.getItem("isLoggedIn");
-
-    if (status === "true") {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  const [studentCount, setStudentCount] = useState(0);
+  const [companyCount, setCompanyCount] = useState(0);
+  const [placedCount, setPlacedCount] = useState(0);
+  const [placementRate, setPlacementRate] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!loginStatus()) {
-      navigate("/");
-    }
-  }, [navigate]);
-
-  // Welcome message
-  useEffect(() => {
-    alert("Welcome Admin");
+    fetchStats();
   }, []);
 
-  function handleLogout() {
-    localStorage.removeItem("isLoggedIn");
-    navigate("/");
-  }
+  async function fetchStats() {
+    try {
+      setLoading(true);
 
-  function addStudents() {
-    setStudents(["Rahul", "Ravi", "Anjali"]);
-  }
+      const [studentsRes, companiesRes, placementStatsRes] = await Promise.all([
+        api.get("/students?limit=1"),
+        api.get("/companies?limit=1"),
+        api.get("/placements/stats"),
+      ]);
 
-  function add() {
-    setCount(count + 1);
-  }
-
-  function add1() {
-    setCount1(count1 + 1);
-    console.log(count1);
-  }
-
-  function add2() {
-    setCount2(count2 - 1);
-    console.log(count2);
-  }
-
-  function add3() {
-    setCount3(count3 + 1);
-    console.log(count3);
+      setStudentCount(studentsRes.data?.pagination?.totalStudents ?? 0);
+      setCompanyCount(companiesRes.data?.pagination?.totalCompanies ?? 0);
+      setPlacedCount(placementStatsRes.data?.stats?.totalPlaced ?? 0);
+      setPlacementRate(placementStatsRes.data?.stats?.placementRate ?? 0);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
-    <div className="card">
-      <h1>Welcome Back</h1>
-
-      <button onClick={handleLogout}>Logout</button>
-
-      <Clock />
-
-      <div className="card">
-        <h2>{count}</h2>
-        <button onClick={add}>Add Students</button>
-        <button onClick={() => setCount(250)}>Reset Students</button>
-        <p>Total Students</p>
+    <div className="dashboard">
+      <div className="dashboard-header">
+        <div>
+          <h1>Welcome back{user?.name ? `, ${user.name}` : ""}</h1>
+          <p className="dashboard-subtitle">Here's what's happening with your placements today.</p>
+        </div>
+        <Clock />
       </div>
 
-      <div className="card">
-        <h2>{count1}</h2>
-        <button onClick={add1}>Add Companies</button>
-        <p>Companies</p>
+      <div className="dashboard-stats">
+        <div className="stat-card">
+          <AiOutlineTeam className="stat-icon" />
+          <div>
+            <h2>{loading ? "…" : studentCount}</h2>
+            <p>Total Students</p>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <AiOutlineBank className="stat-icon" />
+          <div>
+            <h2>{loading ? "…" : companyCount}</h2>
+            <p>Companies</p>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <AiOutlineCheckCircle className="stat-icon" />
+          <div>
+            <h2>{loading ? "…" : placedCount}</h2>
+            <p>Students Placed</p>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <AiOutlinePercentage className="stat-icon" />
+          <div>
+            <h2>{loading ? "…" : `${placementRate}%`}</h2>
+            <p>Placement Rate</p>
+          </div>
+        </div>
       </div>
 
-      <div className="card">
-        <h2>{count2}</h2>
-        <button onClick={add2}>Decrease</button>
-        <p>Pending</p>
-      </div>
-
-      <div className="card">
-        <h2>{count3}</h2>
-        <button onClick={add3}>Increase</button>
-        <p>Placed</p>
-      </div>
-
-      <div className="card">
-        <button onClick={addStudents}>Students</button>
-
-        <h3>Students Array</h3>
-
-        {students.map((student, index) => (
-          <p key={index}>{student}</p>
-        ))}
+      <div className="dashboard-links">
+        <Link to="/students" className="dashboard-link-card">Manage Students →</Link>
+        <Link to="/companies" className="dashboard-link-card">Manage Companies →</Link>
+        <Link to="/placements" className="dashboard-link-card">Track Placements →</Link>
+        <Link to="/reports" className="dashboard-link-card">View Reports →</Link>
       </div>
     </div>
   );
