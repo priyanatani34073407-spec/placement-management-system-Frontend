@@ -1,60 +1,87 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import "./Companies.css";
+import CompaniesTable from "../CompaniesTable/CompaniesTable";
+import api from "../../api/api";
+import { useToast } from "../Toast/ToastContext";
 
 function Companies() {
-  const [companies] = useState([
-    {
-      id: 1,
-      name: "TCS",
-      location: "Hyderabad",
-      package: "4 LPA",
-    },
-    {
-      id: 2,
-      name: "Infosys",
-      location: "Bangalore",
-      package: "5 LPA",
-    },
-    {
-      id: 3,
-      name: "Wipro",
-      location: "Chennai",
-      package: "3.8 LPA",
-    },
-    {
-      id: 4,
-      name: "Accenture",
-      location: "Pune",
-      package: "6 LPA",
-    },
-  ]);
+  const toast = useToast();
+  const [companies, setCompanies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    fetchCompanies();
+  }, []);
+
+  async function fetchCompanies() {
+    try {
+      setLoading(true);
+      const response = await api.get("/companies?limit=100");
+      setCompanies(response.data.companies || []);
+    } catch (error) {
+      console.error(error);
+      toast.error("Unable to load companies.");
+      setCompanies([]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleDelete(id) {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this company?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const response = await api.delete(`/companies/${id}`);
+      toast.success(response.data.message || "Company deleted.");
+      setCompanies((prev) => prev.filter((company) => company._id !== id));
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Failed to delete company.");
+    }
+  }
+
+  const filteredCompanies = companies.filter((company) => {
+    const query = search.toLowerCase();
+    return (
+      company.companyName?.toLowerCase().includes(query) ||
+      company.location?.toLowerCase().includes(query) ||
+      company.hrName?.toLowerCase().includes(query) ||
+      company.jobRole?.toLowerCase().includes(query)
+    );
+  });
 
   return (
     <div className="companies">
       <h1>Companies</h1>
       <p>List of companies participating in placements.</p>
 
-      <table border="1" cellPadding="10" cellSpacing="0">
-        <thead>
-          <tr>
-            <th>S.No</th>
-            <th>Company Name</th>
-            <th>Location</th>
-            <th>Package</th>
-          </tr>
-        </thead>
+      <Link to="/company-registration">
+        <button className="add-btn">+ Add New Company</button>
+      </Link>
 
-        <tbody>
-          {companies.map((company, index) => (
-            <tr key={company.id}>
-              <td>{index + 1}</td>
-              <td>{company.name}</td>
-              <td>{company.location}</td>
-              <td>{company.package}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <input
+        type="text"
+        placeholder="Search companies..."
+        className="search-bar"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      {loading ? (
+        <h3>Loading...</h3>
+      ) : filteredCompanies.length === 0 ? (
+        <h3>No Companies Found</h3>
+      ) : (
+        <CompaniesTable
+          companies={filteredCompanies}
+          onDelete={handleDelete}
+        />
+      )}
     </div>
   );
 }
