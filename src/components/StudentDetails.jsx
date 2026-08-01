@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import api from "../api/api";
+import { useToast } from "./Toast/ToastContext";
 
 function StudentDetails() {
   const { id } = useParams();
+  const toast = useToast();
 
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,18 +16,11 @@ function StudentDetails() {
 
   const fetchStudent = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/students/${id}`);
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setStudent(data.student);
-      } else {
-        alert(data.message);
-      }
+      const response = await api.get(`/students/${id}`);
+      setStudent(response.data.student);
     } catch (error) {
       console.error(error);
-      alert("Unable to fetch student details.");
+      toast.error(error.response?.data?.message || "Unable to fetch student details.");
     } finally {
       setLoading(false);
     }
