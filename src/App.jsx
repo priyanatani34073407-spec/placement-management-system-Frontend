@@ -24,7 +24,12 @@ import CompanyRegistration from './components/pages/CompanyRegistration/CompanyR
 
 import Companies from './components/Companies/Companies';
 import EditStudent from "./components/pages/EditStudent/EditStudent";
-
+import EditCompany from "./components/pages/EditCompany/EditCompany";
+import Placements from "./components/pages/Placements/Placements";
+import PlacementRegistration from "./components/pages/PlacementRegistration/PlacementRegistration";
+import Reports from "./components/pages/Reports/Reports";
+import Settings from "./components/pages/Settings/Settings";
+import PrivateRoute from "./components/PrivateRoute";
 
 
 function App() {
@@ -35,47 +40,45 @@ function App() {
 
     <Routes>
 
-      <Route 
-        path="/login" 
+      <Route
+        path="/login"
         element={<Login />}
       />
 
       {/* Without Layout */}
 
-
-
-      <Route 
-        path="/register" 
+      <Route
+        path="/register"
         element={<Register />}
       />
 
+      {/* With Layout — everything below requires login */}
 
+      <Route
+        element={
+          <PrivateRoute>
+            <Layout />
+          </PrivateRoute>
+        }
+      >
 
-      {/* With Layout */}
-
-      <Route element={<Layout />}>
-
-
-        <Route 
-          path="/" 
+        <Route
+          path="/"
           element={<Home />}
         />
 
-
-        <Route 
-          path="/dashboard" 
+        <Route
+          path="/dashboard"
           element={<Dashboard />}
         />
 
-
-        <Route 
-          path="/students" 
+        <Route
+          path="/students"
           element={<Students />}
         />
 
-
-        <Route 
-          path="/student/:id" 
+        <Route
+          path="/student/:id"
           element={<StudentDetails />}
         />
         <Route
@@ -88,30 +91,34 @@ function App() {
           }
         />
 
-
-        <Route 
-          path="/company-registration" 
+        <Route
+          path="/company-registration"
           element={<CompanyRegistration />}
         />
 
-
-        <Route 
-          path="/companies" 
+        <Route
+          path="/companies"
           element={<Companies />}
         />
 
+        <Route
+          path="/companies/edit/:id"
+          element={<EditCompany />}
+        />
+
+        <Route path="/placements" element={<Placements />} />
+        <Route path="/placements/new" element={<PlacementRegistration />} />
+        <Route path="/reports" element={<Reports />} />
+        <Route path="/settings" element={<Settings />} />
 
       </Route>
 
-
-
       {/* 404 Page */}
 
-      <Route 
-        path="*" 
+      <Route
+        path="*"
         element={<NotFound />}
       />
-
 
     </Routes>
 
