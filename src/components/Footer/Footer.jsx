@@ -1,3 +1,4 @@
+import "./Footer.css";
 function Footer(){
     return(
         <footer><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-c-circle" viewBox="0 0 16 16">
