@@ -1,133 +1,90 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
+import { isLoggedIn, login as saveSession } from "../../../utils/auth";
+import { useToast } from "../../Toast/ToastContext";
+import api from "../../../api/api";
 
 function Login() {
   const navigate = useNavigate();
+  const toast = useToast();
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  const passwordPattern =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
-  // Function to check login status
-  function loginStatus() {
-    const loggedIn = localStorage.getItem("isLoggedIn");
-
-    if (loggedIn === "true") {
-      setIsLoggedIn(true);
-      navigate("/Dashboard");
-    } else {
-      setIsLoggedIn(false);
+  // If already logged in, skip straight to the dashboard
+  useEffect(() => {
+    if (isLoggedIn()) {
+      navigate("/dashboard");
     }
-  }
+  }, [navigate]);
 
-  // Check login status when component loads
-useEffect(() => {
-  const status = loginStatus();
+  async function handleLogin(e) {
+    e.preventDefault();
 
-  if (!status) {
-    navigate("/login");
-  }
-}, []);
+    if (!email || !password) {
+      toast.error("Please enter both email and password.");
+      return;
+    }
 
-  function handleLogin() {
     setLoading(true);
 
-    setTimeout(() => {
-      if (!emailPattern.test(email)) {
-        alert("Please enter a valid email.");
-        setLoading(false);
-        return;
-      }
+    try {
+      const response = await api.post("/auth/login", { email, password });
+      const { token, user } = response.data;
 
-      if (!passwordPattern.test(password)) {
-        alert(
-          "Password should contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character."
-        );
-        setLoading(false);
-        return;
-      }
-
-      if (email !== "admin@gmail.com" || password !== "Admin@123") {
-        alert("Invalid Email or Password");
-        setLoading(false);
-        return;
-      }
-
-      alert("Login Successful!");
-
-      localStorage.setItem("isLoggedIn", "true");
+      saveSession(token, user);
+      toast.success(`Welcome back, ${user?.name || "Admin"}!`);
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Invalid email or password"
+      );
+    } finally {
       setLoading(false);
-
-      loginStatus();
-    }, 2000);
-  }
-
-  function handleLogout() {
-    localStorage.removeItem("isLoggedIn");
-    setIsLoggedIn(false);
-    setEmail("");
-    setPassword("");
-
-    navigate("/");
+    }
   }
 
   return (
     <div className="login-container">
-      {!isLoggedIn ? (
-        <>
-          <h1>Placement Management Login</h1>
+      <h1>Placement Management Login</h1>
 
-          <input
-            type="email"
-            placeholder="Enter Email"
-            value={email}
-            disabled={loading}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+      <form onSubmit={handleLogin}>
+        <input
+          type="email"
+          placeholder="Enter Email"
+          value={email}
+          disabled={loading}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Enter Password"
-            value={password}
-            disabled={loading}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+        <input
+          type={showPassword ? "text" : "password"}
+          placeholder="Enter Password"
+          value={password}
+          disabled={loading}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? "Hide Password" : "Show Password"}
-          </button>
+        <button
+          type="button"
+          className="secondary-btn"
+          onClick={() => setShowPassword(!showPassword)}
+        >
+          {showPassword ? "Hide Password" : "Show Password"}
+        </button>
 
-          <button
-            type="button"
-            onClick={handleLogin}
-            disabled={loading}
-          >
-            {loading ? "Logging in..." : "Login"}
-          </button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
+        </button>
+      </form>
 
-          <p className="register-text">
-            Don't have an account?
-            <Link to="/Register"> Register</Link>
-          </p>
-        </>
-      ) : (
-        <>
-          <h2>Welcome Back!</h2>
-
-          <button onClick={handleLogout}>Logout</button>
-        </>
-      )}
+      <p className="register-text">
+        Registering a student instead?
+        <Link to="/register"> Go to Student Registration</Link>
+      </p>
     </div>
   );
 }
