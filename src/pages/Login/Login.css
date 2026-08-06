@@ -55,6 +55,16 @@ body{
     background-color: #1565c0;
 }
 
+.login-container button.secondary-btn{
+    background-color: #e2e8f0;
+    color: #334155;
+    margin-top: 0;
+}
+
+.login-container button.secondary-btn:hover{
+    background-color: #cbd5e1;
+}
+
 .login-container h2{
     margin: 20px 0;
     color: green;
