@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../../api/api";
+import { useToast } from "../../Toast/ToastContext";
 import './CompanyRegistration.css';
 
 function CompanyRegistration() {
   const navigate = useNavigate();
+  const toast = useToast();
+  const [loading, setLoading] = useState(false);
 
   const [company, setCompany] = useState({
     companyName: "",
@@ -16,6 +20,8 @@ function CompanyRegistration() {
     eligibility: "",
   });
 
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   function handleChange(e) {
     const { name, value } = e.target;
 
@@ -25,22 +31,44 @@ function CompanyRegistration() {
     });
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
-    let companies =
-      JSON.parse(localStorage.getItem("companies")) || [];
+    if (!emailPattern.test(company.email)) {
+      toast.error("Enter a valid HR email");
+      return;
+    }
 
-    companies.push(company);
+    if (company.phone.length !== 10 || isNaN(company.phone)) {
+      toast.error("Enter a valid 10-digit phone number");
+      return;
+    }
 
-    localStorage.setItem(
-      "companies",
-      JSON.stringify(companies)
-    );
+    try {
+      setLoading(true);
 
-    alert("Company Registered Successfully!");
+      const response = await api.post("/companies", company);
 
-    navigate("/companies");
+      toast.success(response.data.message || "Company Registered Successfully!");
+
+      setCompany({
+        companyName: "",
+        location: "",
+        hrName: "",
+        email: "",
+        phone: "",
+        package: "",
+        jobRole: "",
+        eligibility: "",
+      });
+
+      navigate("/companies");
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Company registration failed.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -54,6 +82,7 @@ function CompanyRegistration() {
           placeholder="Company Name"
           value={company.companyName}
           onChange={handleChange}
+          disabled={loading}
           required
         />
 
@@ -63,6 +92,7 @@ function CompanyRegistration() {
           placeholder="Location"
           value={company.location}
           onChange={handleChange}
+          disabled={loading}
           required
         />
 
@@ -72,6 +102,7 @@ function CompanyRegistration() {
           placeholder="HR Name"
           value={company.hrName}
           onChange={handleChange}
+          disabled={loading}
           required
         />
 
@@ -81,6 +112,7 @@ function CompanyRegistration() {
           placeholder="HR Email"
           value={company.email}
           onChange={handleChange}
+          disabled={loading}
           required
         />
 
@@ -90,6 +122,7 @@ function CompanyRegistration() {
           placeholder="Phone Number"
           value={company.phone}
           onChange={handleChange}
+          disabled={loading}
           required
         />
 
@@ -99,6 +132,7 @@ function CompanyRegistration() {
           placeholder="Job Role"
           value={company.jobRole}
           onChange={handleChange}
+          disabled={loading}
           required
         />
 
@@ -108,6 +142,7 @@ function CompanyRegistration() {
           placeholder="Package (LPA)"
           value={company.package}
           onChange={handleChange}
+          disabled={loading}
           required
         />
 
@@ -117,15 +152,16 @@ function CompanyRegistration() {
           placeholder="Eligibility Criteria"
           value={company.eligibility}
           onChange={handleChange}
+          disabled={loading}
           required
         />
 
-        <button type="submit">Register Company</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Registering..." : "Register Company"}
+        </button>
       </form>
-      </div>
+    </div>
   );
 }
 
 export default CompanyRegistration;
-
-
