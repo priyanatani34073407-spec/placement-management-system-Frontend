@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../api/api";
+import { useToast } from "../../Toast/ToastContext";
 import "./EditStudent.css";
 
 function EditStudent() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [studentName, setStudentName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [branch, setBranch] = useState("");
   const [cgpa, setCgpa] = useState("");
-  const[loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
+
   useEffect(() => {
     fetchStudent();
   }, []);
@@ -30,33 +34,39 @@ function EditStudent() {
       setCgpa(student.cgpa);
     } catch (error) {
       console.error(error);
-      alert("Student not found");
+      toast.error("Student not found");
+    } finally {
+      setFetching(false);
     }
   };
 
- const handleUpdate = async (e) => {
-  e.preventDefault();
+  const handleUpdate = async (e) => {
+    e.preventDefault();
 
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    await api.put(`/students/${id}`, {
-      studentName,
-      email,
-      phone,
-      branch,
-      cgpa,
-    });
+      await api.put(`/students/${id}`, {
+        studentName,
+        email,
+        phone,
+        branch,
+        cgpa,
+      });
 
-    alert("Student Updated Successfully");
-    navigate("/students");
-  } catch (error) {
-    console.error(error);
-    alert("Update Failed");
-  } finally {
-    setLoading(false);
+      toast.success("Student Updated Successfully");
+      navigate("/students");
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Update Failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (fetching) {
+    return <h2>Loading...</h2>;
   }
-};
 
   return (
     <div className="edit-container">
@@ -83,10 +93,13 @@ function EditStudent() {
         />
 
         <label>Branch</label>
-        <input
-          value={branch}
-          onChange={(e) => setBranch(e.target.value)}
-        />
+        <select value={branch} onChange={(e) => setBranch(e.target.value)}>
+          <option value="CSE">CSE</option>
+          <option value="CSM">CSM</option>
+          <option value="CSE-AI">CSE-AI</option>
+          <option value="CIVIL">CIVIL</option>
+          <option value="DS">DS</option>
+        </select>
 
         <label>CGPA</label>
         <input
@@ -95,7 +108,7 @@ function EditStudent() {
         />
 
         <button disabled={loading} type="submit">
-          {loading ? "Updating student..":"Update Student"}
+          {loading ? "Updating student..." : "Update Student"}
         </button>
 
       </form>
