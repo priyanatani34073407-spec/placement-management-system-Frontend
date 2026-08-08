@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import Student from "../../StudentTable/StudentTable";
 import { Link } from "react-router-dom";
-import { AiFillAudio, AiFillCamera } from "react-icons/ai";
 import api from "../../../api/api";
+import { useToast } from "../../Toast/ToastContext";
 
 function Students() {
+  const toast = useToast();
   const [loading, setLoading] = useState(true);
   const [students, setStudents] = useState([]);
 
@@ -31,7 +32,8 @@ function Students() {
         setStudents([]);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      toast.error("Unable to load students.");
       setStudents([]);
     } finally {
       setLoading(false);
@@ -43,15 +45,13 @@ function Students() {
   }, [page, sortField, order]);
 
   return (
-    <>
+    <div className="page-container">
       <h1>Student Management</h1>
 
       <p>Manage all registered students here.</p>
 
       <Link to="/register">
-        <button>Add New Student</button>
-        <AiFillAudio />
-        <AiFillCamera />
+        <button className="add-btn">+ Add New Student</button>
       </Link>
 
       {/* Sort Controls */}
@@ -130,7 +130,7 @@ function Students() {
       ) : (
         <h3>No Students Registered</h3>
       )}
-    </>
+    </div>
   );
 }
 
