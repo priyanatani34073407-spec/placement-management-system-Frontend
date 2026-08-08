@@ -1,1 +1,95 @@
+.reports-page h1 {
+  margin-bottom: 6px;
+}
 
+.reports-page > p {
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
+.reports-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.reports-summary .stat-card {
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+  text-align: center;
+}
+
+.reports-summary .stat-card h2 {
+  font-size: 28px;
+  color: #1e40af;
+}
+
+.reports-summary .stat-card p {
+  color: #64748b;
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+.report-section {
+  background: white;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+  margin-bottom: 24px;
+}
+
+.report-section h3 {
+  margin-bottom: 18px;
+  color: #0f172a;
+}
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.bar-label {
+  width: 130px;
+  flex-shrink: 0;
+  font-size: 14px;
+  color: #334155;
+  font-weight: 600;
+}
+
+.bar-track {
+  flex: 1;
+  background: #f1f5f9;
+  border-radius: 6px;
+  height: 20px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: #2563eb;
+  transition: width 0.4s ease;
+}
+
+.bar-value {
+  width: 32px;
+  text-align: right;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.bar-fill.status-applied { background: #3b82f6; }
+.bar-fill.status-shortlisted { background: #eab308; }
+.bar-fill.status-selected { background: #22c55e; }
+.bar-fill.status-rejected { background: #ef4444; }
+
+.empty-note {
+  color: #94a3b8;
+  font-size: 14px;
+}
