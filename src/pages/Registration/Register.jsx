@@ -60,15 +60,16 @@ function Register() {
     setLoading(true);
 
     try {
-      const response = await api.post("/students", {
+      const response = await api.post("/auth/register", {
         studentName,
+        password,
         email,
         phone,
         branch,
         cgpa,
       });
 
-      toast.success(response.data.message || "Student Registered Successfully!");
+      toast.success(response.data.message || "Registration successful!");
 
       setStudentName("");
       setPassword("");
@@ -77,7 +78,7 @@ function Register() {
       setBranch("");
       setCGPA("");
 
-      navigate("/students");
+      navigate("/login");
     } catch (error) {
       console.error("Full Error:", error);
       toast.error(error.response?.data?.message || "Registration Failed");
