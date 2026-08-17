@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import Student from "../../StudentTable/StudentTable";
+import Student from "../../components/StudentTable/StudentTable";
 import { Link } from "react-router-dom";
-import api from "../../../api/api";
-import { useToast } from "../../Toast/ToastContext";
+import api from "../../api/api";
+import { useToast } from "../../components/Toast/ToastContext";
 
 function Students() {
   const toast = useToast();
