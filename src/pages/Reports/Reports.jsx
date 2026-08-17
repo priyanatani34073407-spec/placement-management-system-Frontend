@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./Reports.css";
-import api from "../../../api/api";
-import { useToast } from "../../Toast/ToastContext";
+import api from "../../api/api";
+import { useToast } from "../../components/Toast/ToastContext";
 
 function Reports() {
   const toast = useToast();
