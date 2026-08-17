@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./Register.css";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/api";
-import { useToast } from "../Toast/ToastContext";
+import { useToast } from "../../components/Toast/ToastContext";
 
 function Register() {
   const navigate = useNavigate();
@@ -234,7 +234,7 @@ function Register() {
 import "./Registration.css";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/api";
-import { useToast } from "../Toast/ToastContext";
+import { useToast } from "../../components/Toast/ToastContext";
 
 function Register() {
   const navigate = useNavigate();
@@ -463,13 +463,6 @@ function Register() {
           disabled={loading}
         >
           Login
-        </button>
-      </form>
-    </div>
-  );
-}
-
-export default Register;
         </button>
       </form>
     </div>
