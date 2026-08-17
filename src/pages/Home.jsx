@@ -1,4 +1,4 @@
-import Dashboard from '../Dashboard/Dashboard';
+import Dashboard from "../components/Dashboard/Dashboard";
 
 function Home() {
   return (
