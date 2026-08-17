@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
-import { isLoggedIn, login as saveSession } from "../../../utils/auth";
-import { useToast } from "../../Toast/ToastContext";
-import api from "../../../api/api";
+import { isLoggedIn, login as saveSession } from "../../utils/auth";
+import { useToast } from "../../components/Toast/ToastContext";
+import api from "../../api/api";
 
 function Login() {
   const navigate = useNavigate();
