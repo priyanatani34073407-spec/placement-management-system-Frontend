@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../../api/api";
-import { useToast } from "../../Toast/ToastContext";
+import api from "../../api/api";
+import { useToast } from "../../components/Toast/ToastContext";
 import './CompanyRegistration.css';
 
 function CompanyRegistration() {
