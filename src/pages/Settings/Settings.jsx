@@ -1,7 +1,7 @@
 import { useState } from "react";
-import api from "../../../api/api";
-import { useToast } from "../../Toast/ToastContext";
-import { getUser } from "../../../utils/auth";
+import api from "../../api/api";
+import { useToast } from "../../components/Toast/ToastContext";
+import { getUser } from "../../utils/auth";
 import "../EditStudent/EditStudent.css";
 
 function Settings() {
