@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import api from "../../../api/api";
-import { useToast } from "../../Toast/ToastContext";
+import api from "../../api/api";
+import { useToast } from "../../components/Toast/ToastContext";
 import "../EditStudent/EditStudent.css";
 
 function EditCompany() {
