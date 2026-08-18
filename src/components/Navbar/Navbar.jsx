@@ -1,5 +1,5 @@
 import './Navbar.css';
-import { getUser } from '../utils/auth';
+import { getUser } from '../../utils/auth';
 import { AiOutlineUser } from 'react-icons/ai';
 
 function Navbar() {
