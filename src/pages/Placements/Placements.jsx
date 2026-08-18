@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Placements.css";
-import api from "../../../api/api";
-import PlacementsTable from "../../PlacementsTable/PlacementsTable";
-import { useToast } from "../../Toast/ToastContext";
+import api from "../../api/api";
+import PlacementsTable from "../../components/PlacementsTable";
+import { useToast } from "../../components/Toast/ToastContext";
 
 function Placements() {
   const toast = useToast();
